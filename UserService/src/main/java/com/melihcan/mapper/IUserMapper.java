@@ -3,6 +3,7 @@ package com.melihcan.mapper;
 import com.melihcan.dto.request.NewCreateUserRequestDto;
 import com.melihcan.dto.request.UpdateByEmailOrUserNameRequestDto;
 import com.melihcan.dto.request.UpdateRequestDto;
+import com.melihcan.rabbitmq.model.NewCreateUserRequestModel;
 import com.melihcan.repository.entity.UserProfile;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,5 +21,7 @@ public interface IUserMapper {
     @Mapping(source = "authId" ,target = "id")
     UpdateByEmailOrUserNameRequestDto toUpdateByEmailOrUserNameRequestDto(final UpdateRequestDto dto);
     UserProfile toUserProfile(final UpdateRequestDto dto);
+
+    NewCreateUserRequestDto toNewCreateUserRequestDto(final NewCreateUserRequestModel model);
 
 }

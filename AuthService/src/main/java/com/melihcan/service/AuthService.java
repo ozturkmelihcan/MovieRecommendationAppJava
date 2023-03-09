@@ -4,19 +4,21 @@ import com.melihcan.dto.request.ActivateRequestDto;
 import com.melihcan.dto.request.LoginRequestDto;
 import com.melihcan.dto.request.RegisterRequestDto;
 import com.melihcan.dto.request.UpdateByEmailOrUsernameRequestDto;
-import com.melihcan.dto.response.LoginResponseDto;
 import com.melihcan.dto.response.RegisterResponseDto;
 import com.melihcan.exception.AuthManagerException;
 import com.melihcan.exception.ErrorType;
 import com.melihcan.manager.IUserManager;
 import com.melihcan.mapper.IAuthMapper;
+import com.melihcan.rabbitmq.producer.RegisterUserProducer;
 import com.melihcan.repository.IAuthRepository;
 import com.melihcan.repository.entity.Auth;
 import com.melihcan.repository.enums.EStatus;
 import com.melihcan.utility.CodeGenerator;
+import com.melihcan.utility.JwtTokenManager;
 import com.melihcan.utility.ServiceManager;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -26,18 +28,38 @@ public class AuthService extends ServiceManager<Auth,Long> {
 
     private final IUserManager userManager;
 
-    public AuthService(IAuthRepository authRepository,IUserManager userManager){
+    private final JwtTokenManager jwtTokenManager;
+
+    private final RegisterUserProducer userProducer;
+
+    public AuthService(IAuthRepository authRepository, IUserManager userManager, JwtTokenManager jwtTokenManager, RegisterUserProducer userProducer){
         super(authRepository);
         this.authRepository=authRepository;
         this.userManager=userManager;
+        this.jwtTokenManager=jwtTokenManager;
+        this.userProducer = userProducer;
     }
 
+    @Transactional
     public RegisterResponseDto register(RegisterRequestDto dto) {
         try {
             Auth auth = IAuthMapper.INSTANCE.toAuth(dto);           // save'leme işlemi yapınca buradaki auth id mi almıs olacagım. otomatik olarak atanmış olacak.
             auth.setActivationCode(CodeGenerator.generateCode());
             save(auth);
             userManager.createUser(IAuthMapper.INSTANCE.toNewCreateUserRequestDto(auth));
+            return IAuthMapper.INSTANCE.toRegisterResponseDto(auth);        // bu kısımda id setlenmiş olacak.
+        }catch (Exception exception){
+            throw new AuthManagerException(ErrorType.USER_NOT_CREATED);  // Error mesaj düzenlenecek.
+        }
+
+    }
+    @Transactional
+    public RegisterResponseDto registerWithRabbitMQ(RegisterRequestDto dto) {
+        try {
+            Auth auth = IAuthMapper.INSTANCE.toAuth(dto);           // save'leme işlemi yapınca buradaki auth id mi almıs olacagım. otomatik olarak atanmış olacak.
+            auth.setActivationCode(CodeGenerator.generateCode());
+            save(auth);
+            userProducer.sendNewUser(IAuthMapper.INSTANCE.toNewCreateUserRequestModel(auth));
             return IAuthMapper.INSTANCE.toRegisterResponseDto(auth);        // bu kısımda id setlenmiş olacak.
         }catch (Exception exception){
             throw new AuthManagerException(ErrorType.USER_NOT_CREATED);  // Error mesaj düzenlenecek.
@@ -53,7 +75,7 @@ public class AuthService extends ServiceManager<Auth,Long> {
         if (dto.getActivationCode().equals(auth.get().getActivationCode())){        // dtodan gelen code ile auth'daki code eşitse
             auth.get().setStatus(EStatus.ACTIVE);                                   // status'ü setliyoruz ve auth'u kaydediyoruz
             save(auth.get());
-
+            userManager.activateStatus(dto.getId());
 
             return true;                                                            // true döndürüp sonlandırıyoruz.
         }else {
@@ -61,7 +83,7 @@ public class AuthService extends ServiceManager<Auth,Long> {
         }
     }
 
-    public LoginResponseDto login(LoginRequestDto dto) {
+    public String  login(LoginRequestDto dto) {
         Optional<Auth>auth = authRepository.findOptionalByUsernameAndPassword(dto.getUsername(), dto.getPassword());
         if (auth.isEmpty()){
             throw new AuthManagerException(ErrorType.LOGIN_ERROR);
@@ -69,7 +91,10 @@ public class AuthService extends ServiceManager<Auth,Long> {
         if (auth.get().getStatus().equals(EStatus.ACTIVE)){
             throw new AuthManagerException(ErrorType.LOGIN_ERROR_STATUS);
         }
-        return IAuthMapper.INSTANCE.toLoginResponseDto(auth.get());
+        Optional<String >token = jwtTokenManager.createToken(auth.get().getId(),auth.get().getRole());
+        if (token.isEmpty())
+            throw new AuthManagerException(ErrorType.TOKEN_NOT_CREATED);
+        return token.get();
 
     }
 

@@ -1,4 +1,6 @@
 rootProject.name = 'MovieRecommendationAppJava'
 include 'AuthService'
 include 'UserService'
+include 'ConfigServer'
+include 'ApiGatewayService'
 

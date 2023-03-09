@@ -5,10 +5,10 @@ import com.melihcan.dto.request.RegisterRequestDto;
 import com.melihcan.dto.request.UpdateByEmailOrUsernameRequestDto;
 import com.melihcan.dto.response.LoginResponseDto;
 import com.melihcan.dto.response.RegisterResponseDto;
+import com.melihcan.rabbitmq.model.NewCreateUserRequestModel;
 import com.melihcan.repository.entity.Auth;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -27,4 +27,6 @@ public interface IAuthMapper {
     NewCreateUserRequestDto toNewCreateUserRequestDto (final Auth auth);
 
     Auth toAuth(final UpdateByEmailOrUsernameRequestDto dto);
+
+    NewCreateUserRequestModel toNewCreateUserRequestModel(final Auth auth);
 }
