@@ -18,25 +18,17 @@ public class UserProfile extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
+    private Long id;
     private Long authId;
-
-    String username;
-
-    String email;
-
-    String phone;
-
-    String avatar;
-
-    String address;
-
-    String about;
-
+    private String username;
+    private String email;
+    private String phone;
+    private String avatar;
+    private String address;
+    private String about;
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    EStatus status = EStatus.PENDING;
+    private EStatus status=EStatus.PENDING;
 
 
 }

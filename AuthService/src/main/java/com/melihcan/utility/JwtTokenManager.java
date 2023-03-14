@@ -1,33 +1,34 @@
 package com.melihcan.utility;
 
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
 import com.melihcan.repository.enums.ERole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Date;
 import java.util.Optional;
 
 @Service
 public class JwtTokenManager {
-
     @Value("${jwt.secretKey}")
     String secretKey;
-    @Value("${jwt.audience}")
+   @Value("${jwt.audience}")
     String audience;
     @Value("${jwt.issuer}")
     String issuer;
 
-    public Optional<String> createToken(Long id){
-        String token = null;
 
-        Date date = new Date(System.currentTimeMillis()+(1000*5*60));
+
+    public Optional<String> createToken(Long id){
+        String token=null;
+        Date date=new Date(System.currentTimeMillis()+(1000*5*60));
         try {
-            token = JWT.create()
+            token= JWT.create()
                     .withAudience(audience)
                     .withIssuer(issuer)
                     .withIssuedAt(new Date())
@@ -35,18 +36,18 @@ public class JwtTokenManager {
                     .withExpiresAt(date)
                     .sign(Algorithm.HMAC512(secretKey));
             return Optional.of(token);
-        }catch (Exception exception){
-            System.out.println(exception.getMessage());
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
             return Optional.empty();
         }
+
     }
-
     public Optional<String> createToken(Long id, ERole role){
-        String token = null;
-
-        Date date = new Date(System.currentTimeMillis()+(1000*5*60));
+        String token=null;
+        Date date=new Date(System.currentTimeMillis()+(1000*5*60));
         try {
-            token = JWT.create()
+            token= JWT.create()
                     .withAudience(audience)
                     .withIssuer(issuer)
                     .withIssuedAt(new Date())
@@ -55,48 +56,47 @@ public class JwtTokenManager {
                     .withExpiresAt(date)
                     .sign(Algorithm.HMAC512(secretKey));
             return Optional.of(token);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<DecodedJWT> validateToken(String token){
+        try {
+            Algorithm algorithm=Algorithm.HMAC512(secretKey);
+            JWTVerifier verifier=JWT.require(algorithm).withIssuer(issuer).withAudience(audience).build();
+            DecodedJWT decodedJWT= verifier.verify(token);
+            if (decodedJWT==null){
+                return  Optional.empty();
+            }
+            return Optional.of(decodedJWT);
         }catch (Exception exception){
             System.out.println(exception.getMessage());
             return Optional.empty();
         }
     }
 
-    public Optional<DecodedJWT> validateToken(String token){
-        try{
-            Algorithm algorithm = Algorithm.HMAC512(secretKey);
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).withAudience(audience).build();
-            DecodedJWT decodedJWT = verifier.verify(token);
-            if (decodedJWT==null){
-                return Optional.empty();
-            }
-            return Optional.of(decodedJWT);
-        }catch (Exception exception){
-            return Optional.empty();
+    public Optional<Long> getIdFromToken(String token){
+        Optional<DecodedJWT> decodedJWT=validateToken(token);
+        if (decodedJWT.isPresent()){
+            return  Optional.of(decodedJWT.get().getClaim("id").asLong());
         }
-
+        return Optional.empty();
     }
 
-    public Optional<Long>getIdFromToken(String token){
-      Optional<DecodedJWT>decodedJWT = validateToken(token);
-      if (decodedJWT.isPresent()){
-          return Optional.of(decodedJWT.get().getClaim("id").asLong());
-      }
-      return Optional.empty();
-    }
-
-    public Optional<String >getRoleFromToken(String token){
-        try{
-            Algorithm algorithm = Algorithm.HMAC512(secretKey);
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).withAudience(audience).build();
-            DecodedJWT decodedJWT = verifier.verify(token);
+    public Optional<String> getRoleFromToken(String token){
+        try {
+            Algorithm algorithm=Algorithm.HMAC512(secretKey);
+            JWTVerifier verifier=JWT.require(algorithm).withIssuer(issuer).withAudience(audience).build();
+            DecodedJWT decodedJWT= verifier.verify(token);
             if (decodedJWT==null){
-                return Optional.empty();
+                return  Optional.empty();
             }
-            return Optional.of(decodedJWT.getClaim("role").asString());
+            return  Optional.of(decodedJWT.getClaim("role").asString());
         }catch (Exception exception){
+           exception.printStackTrace();
             return Optional.empty();
         }
     }
-
-
 }

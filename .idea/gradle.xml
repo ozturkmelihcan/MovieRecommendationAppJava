@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$/ApiGatewayService" />
             <option value="$PROJECT_DIR$/AuthService" />
             <option value="$PROJECT_DIR$/ConfigServer" />
+            <option value="$PROJECT_DIR$/ElasticService" />
+            <option value="$PROJECT_DIR$/MailService" />
             <option value="$PROJECT_DIR$/UserService" />
           </set>
         </option>

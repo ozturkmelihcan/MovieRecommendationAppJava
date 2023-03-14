@@ -9,21 +9,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Tüm sevisler için Spring DataJPA kullanımı için kalıp servis yapısı
- * @param <T> Entity
- * @param <ID> Entity ye ait @id ile işeretlenmiş değerin datatype ı
- */
+
 @RequiredArgsConstructor
 @Getter
-public class ServiceManager<T extends BaseEntity,ID> implements IService<T,ID>{
+public class ServiceManager <T extends BaseEntity,ID> implements IService<T,ID> {
 
     private final JpaRepository<T,ID> repository;
-
     @Override
     public T save(T t) {
         t.setCreatedate(System.currentTimeMillis());
         t.setUpdatedate(System.currentTimeMillis());
+
         return repository.save(t);
     }
 
@@ -32,6 +28,7 @@ public class ServiceManager<T extends BaseEntity,ID> implements IService<T,ID>{
         t.forEach(x->{
             x.setCreatedate(System.currentTimeMillis());
             x.setUpdatedate(System.currentTimeMillis());
+
         });
         return repository.saveAll(t);
     }
@@ -61,4 +58,5 @@ public class ServiceManager<T extends BaseEntity,ID> implements IService<T,ID>{
     public Optional<T> findById(ID id) {
         return repository.findById(id);
     }
+
 }

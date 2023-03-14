@@ -13,4 +13,6 @@ public class ApiUrls {
     public static final String DELETEBYID="/deletebyid";
     public static final String ACTIVATESTATUS="/activatestatus";
     public static final String UPDATEBYUSERNAMEOREMAIL="/updatebyusernameoremail";
+
+    public static final String FINDBYUSERNAME="/findbyusername";
 }

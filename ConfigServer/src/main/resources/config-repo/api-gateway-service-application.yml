@@ -2,10 +2,15 @@ server:
   port: 80
 
 spring:
+  zipkin:
+    enable: true
+    base-url: http://localhost:9411
+    service:
+      name: api-gateway-service
   main:
     web-application-type: reactive
   application:
-    name: api-gateway
+    name: api-gateway-service
   cloud:
     gateway:
 
@@ -27,7 +32,7 @@ spring:
             - name: CircuitBreaker
               args:
                 enable: true
-                fallbackUri: forward:/fallback/authservice
+                fallbackUri: forward:/fallback/userservice
 
       default-filters:
         - RewritePath= /(?<segment>.*),/api/v1/$\{segment}

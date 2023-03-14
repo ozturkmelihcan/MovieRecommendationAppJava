@@ -103,4 +103,5 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(createError(errorType, exception), errorType.getHttpStatus());
     }
 
+
 }

@@ -17,10 +17,10 @@ public class NewUserConsumer {
     private final UserProfileService userProfileService;
 
     @RabbitListener(queues = ("${rabbitmq.queueRegister}"))
-    public void newUserCreate(NewCreateUserRequestModel model){
+    public  void newUserCreate(NewCreateUserRequestModel model){
         log.info("User {}",model.toString());
-
         userProfileService.createUser(IUserMapper.INSTANCE.toNewCreateUserRequestDto(model));
     }
+
 
 }

@@ -1,4 +1,4 @@
-package com.melihcan.config;
+package com.melihcan.config.rabbitmq;
 
 
 import org.springframework.amqp.core.Binding;
@@ -13,24 +13,35 @@ public class RabbitMqConfig {
 
     @Value("${rabbitmq.exchange-auth}")
     private String exchange;
-
     @Value("${rabbitmq.registerkey}")
     private String registerKey;
     @Value("${rabbitmq.queueRegister}")
     private String queueNameRegister;
 
+    @Value("${rabbitmq.queueEmail}")
+    private  String queueEmail;
+    @Value("${rabbitmq.emailKey}")
+    private  String  emailKey;
     @Bean
     DirectExchange exchangeAuth(){
         return new DirectExchange(exchange);
     }
-
     @Bean
     Queue registerQueue(){
         return new Queue(queueNameRegister);
     }
 
     @Bean
-    public Binding bindingRegister(final Queue registerQueue,final DirectExchange directExchange){
-        return BindingBuilder.bind(registerQueue).to(exchangeAuth()).with(registerKey);
+    Queue emailQueue(){
+        return new Queue(queueEmail);
+    }
+
+    @Bean
+    public Binding bindingRegister(final Queue registerQueue ,final DirectExchange exchangeAuth ){
+        return BindingBuilder.bind(registerQueue).to(exchangeAuth).with(registerKey);
+    }
+    @Bean
+    public Binding bindingMail(final Queue emailQueue ,final DirectExchange exchangeAuth ){
+        return BindingBuilder.bind(emailQueue).to(exchangeAuth).with(emailKey);
     }
 }

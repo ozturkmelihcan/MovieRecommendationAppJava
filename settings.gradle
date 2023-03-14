@@ -3,4 +3,7 @@ include 'AuthService'
 include 'UserService'
 include 'ConfigServer'
 include 'ApiGatewayService'
+include 'MailService'
+include 'ElasticService'
+include 'ElasticService'
 

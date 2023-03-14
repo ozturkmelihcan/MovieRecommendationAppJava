@@ -13,9 +13,7 @@ import java.io.Serializable;
 @Builder
 public class NewCreateUserRequestModel implements Serializable {
 
-    Long authId;
-
-    String username;
-
-    String email;
+    private Long authId;
+    private String username;
+    private String email;
 }

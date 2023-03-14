@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ApiGatewayService/MovieRecommendationAppJava.ApiGatewayService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ApiGatewayService/MovieRecommendationAppJava.ApiGatewayService.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AuthService/MovieRecommendationAppJava.AuthService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/AuthService/MovieRecommendationAppJava.AuthService.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ConfigServer/MovieRecommendationAppJava.ConfigServer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ConfigServer/MovieRecommendationAppJava.ConfigServer.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ElasticService/MovieRecommendationAppJava.ElasticService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ElasticService/MovieRecommendationAppJava.ElasticService.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MailService/MovieRecommendationAppJava.MailService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/MailService/MovieRecommendationAppJava.MailService.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/UserService/MovieRecommendationAppJava.UserService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/UserService/MovieRecommendationAppJava.UserService.main.iml" />
     </modules>
   </component>
